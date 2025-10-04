@@ -67,7 +67,7 @@ function getCuaca() {
 </details>
 
 ## 📸 Screenshot
-![Weather Dashboard](screenshot.png)
+![Weather Dashboard](foto-cuaca.png)
 
 ## 📄 License
 MIT License
