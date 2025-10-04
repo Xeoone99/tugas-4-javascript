@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 500px;
+            width: 100%;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        input {
+            flex: 1;
+            padding: 12px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        button {
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .weather-info {
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .weather-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 15px;
+            padding: 30px;
+            color: white;
+            margin-bottom: 20px;
+        }
+
+        .city-name {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .temperature {
+            font-size: 64px;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+
+        .condition {
+            font-size: 24px;
+            opacity: 0.9;
+            margin-bottom: 20px;
+        }
+
+        .details {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .detail-item {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 15px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+        }
+
+        .detail-label {
+            font-size: 14px;
+            opacity: 0.8;
+            margin-bottom: 5px;
+        }
+
+        .detail-value {
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .console-output {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 20px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .console-title {
+            color: #666;
+            margin-bottom: 10px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .console-line {
+            margin-bottom: 5px;
+        }
+
+        .console-label {
+            color: #9cdcfe;
+        }
+
+        .error {
+            color: #f48771;
+            padding: 15px;
+            background: #fee;
+            border-radius: 10px;
+            margin-top: 20px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Weather Dashboard</h1>
+        <p class="subtitle">Masukkan nama kota untuk melihat cuaca</p>
+        
+        <div class="input-group">
+            <input type="text" id="cityInput" placeholder="Nama Kota" value="Samarinda">
+            <button onclick="getCuaca()">Tampilkan Cuaca</button>
+        </div>
+
+        <div class="error" id="errorMsg"></div>
+
+        <div class="weather-info" id="weatherInfo">
+            <div class="weather-card">
+                <div class="city-name" id="cityName"></div>
+                <div class="temperature" id="temperature"></div>
+                <div class="condition" id="condition"></div>
+                
+                <div class="details">
+                    <div class="detail-item">
+                        <div class="detail-label">Kelembaban</div>
+                        <div class="detail-value" id="humidity"></div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Kecepatan Angin</div>
+                        <div class="detail-value" id="windSpeed"></div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Tekanan</div>
+                        <div class="detail-value" id="pressure"></div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Visibility</div>
+                        <div class="detail-value" id="visibility"></div>
+                    </div>
+                </div>
+            </div>
+
+            <p class="console-title">Console Log Output:</p>
+            <div class="console-output" id="consoleOutput"></div>
+        </div>
+    </div>
+
+    <script>
+        // Simulasi data cuaca
+        const weatherData = {
+            "Jakarta": {
+                temperature: 30,
+                condition: "Cerah",
+                humidity: 65,
+                windSpeed: 12,
+                pressure: 1010,
+                visibility: 10
+            },
+            "Bandung": {
+                temperature: 25,
+                condition: "Hujan Ringan",
+                humidity: 78,
+                windSpeed: 8,
+                pressure: 1012,
+                visibility: 7
+            },
+            "Surabaya": {
+                temperature: 33,
+                condition: "Panas Terik",
+                humidity: 70,
+                windSpeed: 15,
+                pressure: 1008,
+                visibility: 12
+            },
+            "Samarinda": {
+                temperature: 28,
+                condition: "Mendung",
+                humidity: 80,
+                windSpeed: 10,
+                pressure: 1011,
+                visibility: 8
+            },
+            "Medan": {
+                temperature: 29,
+                condition: "Berawan",
+                humidity: 72,
+                windSpeed: 9,
+                pressure: 1009,
+                visibility: 9
+            },
+            "Yogyakarta": {
+                temperature: 27,
+                condition: "Cerah Berawan",
+                humidity: 68,
+                windSpeed: 11,
+                pressure: 1013,
+                visibility: 11
+            },
+            "Semarang": {
+                temperature: 31,
+                condition: "Cerah",
+                humidity: 66,
+                windSpeed: 13,
+                pressure: 1010,
+                visibility: 10
+            },
+            "Makassar": {
+                temperature: 32,
+                condition: "Panas",
+                humidity: 69,
+                windSpeed: 14,
+                pressure: 1007,
+                visibility: 12
+            }
+        };
+
+        function getCuaca() {
+            const cityInput = document.getElementById('cityInput').value.trim();
+            const weatherInfo = document.getElementById('weatherInfo');
+            const errorMsg = document.getElementById('errorMsg');
+            
+            // Reset error
+            errorMsg.style.display = 'none';
+            errorMsg.textContent = '';
+
+            // Cari data kota (case insensitive)
+            const cityKey = Object.keys(weatherData).find(
+                key => key.toLowerCase() === cityInput.toLowerCase()
+            );
+
+            if (cityKey) {
+                const data = weatherData[cityKey];
+                
+                // Update UI
+                document.getElementById('cityName').textContent = cityKey;
+                document.getElementById('temperature').textContent = data.temperature + '°C';
+                document.getElementById('condition').textContent = data.condition;
+                document.getElementById('humidity').textContent = data.humidity + '%';
+                document.getElementById('windSpeed').textContent = data.windSpeed + ' km/h';
+                document.getElementById('pressure').textContent = data.pressure + ' hPa';
+                document.getElementById('visibility').textContent = data.visibility + ' km';
+
+                // Update console output
+                const consoleOutput = document.getElementById('consoleOutput');
+                consoleOutput.innerHTML = `
+                    <div class="console-line"><span class="console-label">Cuaca di ${cityKey}:</span></div>
+                    <div class="console-line"><span class="console-label">Suhu:</span> ${data.temperature}°C</div>
+                    <div class="console-line"><span class="console-label">Kondisi:</span> ${data.condition}</div>
+                `;
+
+                // Tampilkan info cuaca
+                weatherInfo.style.display = 'block';
+
+                // Console log
+                console.log(`Cuaca di ${cityKey}:`);
+                console.log(`Suhu: ${data.temperature}°C`);
+                console.log(`Kondisi: ${data.condition}`);
+                
+            } else {
+                errorMsg.textContent = `Maaf, data cuaca untuk kota "${cityInput}" tidak tersedia. Coba: Jakarta, Bandung, Surabaya, Samarinda, Medan, Yogyakarta, Semarang, atau Makassar.`;
+                errorMsg.style.display = 'block';
+                weatherInfo.style.display = 'none';
+            }
+        }
+
+        // Enter key support
+        document.getElementById('cityInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                getCuaca();
+            }
+        });
+
+        // Load Samarinda by default
+        window.onload = function() {
+            getCuaca();
+        };
+    </script>
+</body>
+</html>
